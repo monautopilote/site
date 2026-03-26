@@ -1,0 +1,1633 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MonAutoPilote — L'IA qui pilote votre quotidien</title>
+    <meta name="description" content="MonAutoPilote : on s'occupe de tout pour les artisans et PME. Comptabilité, devis, prospection, site web, relation client — le tout piloté par l'IA. À partir de 49€/mois.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --primary: #0F172A;
+            --primary-light: #1E293B;
+            --accent: #6366F1;
+            --accent-light: #818CF8;
+            --accent-glow: rgba(99,102,241,0.15);
+            --warm: #F59E0B;
+            --success: #10B981;
+            --danger: #EF4444;
+            --light-bg: #F8FAFC;
+            --card-bg: #FFFFFF;
+            --text: #0F172A;
+            --text-light: #64748B;
+            --text-muted: #94A3B8;
+            --border: #E2E8F0;
+            --gradient-1: linear-gradient(135deg, #6366F1 0%, #8B5CF6 50%, #A78BFA 100%);
+            --gradient-2: linear-gradient(135deg, #0F172A 0%, #1E293B 100%);
+            --gradient-hero: linear-gradient(160deg, #0F172A 0%, #1a1a3e 40%, #2d1b4e 70%, #4c1d95 100%);
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            color: var(--text);
+            line-height: 1.6;
+            background: #fff;
+            overflow-x: hidden;
+        }
+
+        /* ANIMATIONS */
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        @keyframes pulse-glow {
+            0%, 100% { box-shadow: 0 0 20px rgba(99,102,241,0.3); }
+            50% { box-shadow: 0 0 40px rgba(99,102,241,0.6); }
+        }
+        @keyframes shimmer {
+            0% { background-position: -200% center; }
+            100% { background-position: 200% center; }
+        }
+        .animate { opacity: 0; transform: translateY(30px); transition: all 0.6s ease-out; }
+        .animate.visible { opacity: 1; transform: translateY(0); }
+
+        /* NAVIGATION */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(15,23,42,0.85);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+            z-index: 1000;
+            padding: 0.7rem 0;
+        }
+        .nav-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .logo {
+            font-size: 1.3rem;
+            font-weight: 800;
+            color: #fff;
+            text-decoration: none;
+            letter-spacing: -0.02em;
+        }
+        .logo span {
+            background: var(--gradient-1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .nav-links { display: flex; gap: 1.8rem; align-items: center; }
+        .nav-links a {
+            color: rgba(255,255,255,0.7);
+            text-decoration: none;
+            font-size: 0.88rem;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+        .nav-links a:hover { color: #fff; }
+
+        /* BUTTONS */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.75rem;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: none;
+            font-family: inherit;
+        }
+        .btn-primary {
+            background: var(--gradient-1);
+            color: #fff;
+            box-shadow: 0 4px 15px rgba(99,102,241,0.4);
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(99,102,241,0.5);
+        }
+        .btn-outline {
+            background: transparent;
+            color: #fff;
+            border: 1.5px solid rgba(255,255,255,0.3);
+        }
+        .btn-outline:hover {
+            background: rgba(255,255,255,0.1);
+            border-color: rgba(255,255,255,0.5);
+        }
+        .btn-dark {
+            background: var(--primary);
+            color: #fff;
+        }
+        .btn-dark:hover { background: var(--primary-light); }
+
+        /* HERO */
+        .hero {
+            background: var(--gradient-hero);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+            padding: 8rem 2rem 6rem;
+        }
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 800px;
+            height: 800px;
+            background: radial-gradient(circle, rgba(99,102,241,0.15) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+        .hero::after {
+            content: '';
+            position: absolute;
+            bottom: -30%;
+            left: -10%;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(139,92,246,0.1) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+        .hero-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: center;
+            position: relative;
+            z-index: 1;
+        }
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(99,102,241,0.15);
+            border: 1px solid rgba(99,102,241,0.3);
+            padding: 0.4rem 1rem;
+            border-radius: 100px;
+            color: var(--accent-light);
+            font-size: 0.82rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+        }
+        .hero h1 {
+            font-size: 3.5rem;
+            font-weight: 900;
+            line-height: 1.1;
+            color: #fff;
+            letter-spacing: -0.03em;
+            margin-bottom: 1.5rem;
+        }
+        .hero h1 em {
+            font-style: normal;
+            background: var(--gradient-1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .hero p {
+            font-size: 1.15rem;
+            color: rgba(255,255,255,0.65);
+            line-height: 1.7;
+            margin-bottom: 2.5rem;
+            max-width: 500px;
+        }
+        .hero-buttons { display: flex; gap: 1rem; flex-wrap: wrap; }
+        .hero-stats {
+            display: flex;
+            gap: 2.5rem;
+            margin-top: 3rem;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+        .hero-stat strong {
+            display: block;
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: #fff;
+        }
+        .hero-stat span {
+            font-size: 0.82rem;
+            color: rgba(255,255,255,0.5);
+        }
+        /* Hero visual */
+        .hero-visual {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .hero-card {
+            background: rgba(255,255,255,0.06);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 20px;
+            padding: 2rem;
+            width: 100%;
+            max-width: 420px;
+        }
+        .hero-card-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+        }
+        .hero-card-dot {
+            width: 10px; height: 10px;
+            border-radius: 50%;
+            background: var(--success);
+            animation: pulse-glow 2s infinite;
+            box-shadow: 0 0 10px rgba(16,185,129,0.5);
+        }
+        .hero-card-title {
+            color: rgba(255,255,255,0.9);
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+        .hero-task {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.8rem 1rem;
+            background: rgba(255,255,255,0.05);
+            border-radius: 10px;
+            margin-bottom: 0.6rem;
+            border: 1px solid rgba(255,255,255,0.06);
+        }
+        .hero-task-check {
+            width: 20px; height: 20px;
+            border-radius: 6px;
+            background: var(--success);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            color: #fff;
+            font-size: 0.7rem;
+        }
+        .hero-task-pending .hero-task-check {
+            background: rgba(255,255,255,0.1);
+            border: 1.5px solid rgba(255,255,255,0.2);
+        }
+        .hero-task span {
+            color: rgba(255,255,255,0.75);
+            font-size: 0.85rem;
+        }
+        .hero-task-pending span {
+            color: rgba(255,255,255,0.4);
+        }
+
+        /* SECTIONS */
+        section {
+            padding: 6rem 2rem;
+        }
+        .section-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            background: var(--accent-glow);
+            color: var(--accent);
+            font-size: 0.78rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            padding: 0.4rem 1rem;
+            border-radius: 100px;
+            margin-bottom: 1rem;
+        }
+        .section-title {
+            font-size: 2.5rem;
+            font-weight: 800;
+            letter-spacing: -0.03em;
+            text-align: center;
+            margin-bottom: 1rem;
+            color: var(--text);
+        }
+        .section-subtitle {
+            text-align: center;
+            color: var(--text-light);
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin: 0 auto 3.5rem;
+        }
+
+        /* PROBLEM SECTION */
+        .problems {
+            background: var(--light-bg);
+        }
+        .problems-grid {
+            max-width: 1000px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+        }
+        .problem-card {
+            background: #fff;
+            border-radius: 16px;
+            padding: 2rem;
+            border: 1px solid var(--border);
+            transition: all 0.3s;
+        }
+        .problem-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 40px rgba(0,0,0,0.08);
+        }
+        .problem-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+        .problem-card h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        .problem-card p {
+            color: var(--text-light);
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        /* HOW IT WORKS */
+        .steps-container {
+            max-width: 900px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 2rem;
+            position: relative;
+        }
+        .steps-container::before {
+            content: '';
+            position: absolute;
+            top: 35px;
+            left: 12%;
+            right: 12%;
+            height: 2px;
+            background: linear-gradient(90deg, var(--accent), var(--accent-light));
+            opacity: 0.3;
+        }
+        .step {
+            text-align: center;
+            position: relative;
+        }
+        .step-number {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background: var(--gradient-1);
+            color: #fff;
+            font-size: 1.5rem;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.2rem;
+            box-shadow: 0 8px 25px rgba(99,102,241,0.3);
+        }
+        .step h3 {
+            font-size: 0.95rem;
+            font-weight: 700;
+            margin-bottom: 0.4rem;
+        }
+        .step p {
+            font-size: 0.85rem;
+            color: var(--text-light);
+        }
+
+        /* CAS CONCRETS */
+        .cases-section { background: var(--light-bg); }
+        .case-block {
+            max-width: 1000px;
+            margin: 0 auto 2.5rem;
+            background: #fff;
+            border-radius: 20px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.04);
+            transition: all 0.3s;
+        }
+        .case-block:hover {
+            box-shadow: 0 12px 40px rgba(0,0,0,0.08);
+        }
+        .case-header {
+            background: var(--gradient-2);
+            color: #fff;
+            padding: 1.25rem 2rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        .case-header-icon {
+            width: 52px;
+            height: 52px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        .case-header-icon svg { width: 30px; height: 30px; }
+        .case-header h3 {
+            font-size: 1.1rem;
+            font-weight: 700;
+        }
+        .case-header span {
+            font-size: 0.8rem;
+            font-weight: 500;
+            opacity: 0.6;
+            margin-left: auto;
+            background: rgba(255,255,255,0.1);
+            padding: 0.3rem 0.8rem;
+            border-radius: 100px;
+        }
+        .case-body { padding: 2rem; }
+        .case-scenario {
+            display: grid;
+            grid-template-columns: 1fr 50px 1fr;
+            gap: 1rem;
+            align-items: start;
+        }
+        .case-before, .case-after {
+            padding: 1.5rem;
+            border-radius: 14px;
+        }
+        .case-before {
+            background: linear-gradient(135deg, #FEF2F2, #FEE2E2);
+            border: 1px solid #FECACA;
+        }
+        .case-after {
+            background: linear-gradient(135deg, #F0FDF4, #DCFCE7);
+            border: 1px solid #BBF7D0;
+        }
+        .case-label {
+            font-size: 0.72rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            margin-bottom: 0.75rem;
+        }
+        .case-before .case-label { color: var(--danger); }
+        .case-after .case-label { color: var(--success); }
+        .case-before p, .case-after p {
+            font-size: 0.88rem;
+            line-height: 1.65;
+            color: var(--text);
+        }
+        .case-arrow {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: var(--accent);
+            font-weight: 800;
+            align-self: center;
+        }
+        .case-result {
+            margin-top: 1.25rem;
+            padding: 1rem 1.5rem;
+            background: var(--accent-glow);
+            border-left: 4px solid var(--accent);
+            border-radius: 0 12px 12px 0;
+            font-size: 0.9rem;
+            color: var(--text);
+        }
+        .case-result strong { color: var(--accent); }
+
+        /* MODULES */
+        .modules-grid {
+            max-width: 1100px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+        }
+        .module-card {
+            background: #fff;
+            border-radius: 16px;
+            padding: 2rem;
+            border: 1px solid var(--border);
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+        .module-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--gradient-1);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .module-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 40px rgba(0,0,0,0.08);
+        }
+        .module-card:hover::before { opacity: 1; }
+        .module-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+            margin-bottom: 1rem;
+        }
+        .module-card h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        .module-card p {
+            font-size: 0.88rem;
+            color: var(--text-light);
+            line-height: 1.6;
+        }
+
+        /* PRICING */
+        .pricing-section { background: var(--primary); color: #fff; }
+        .pricing-section .section-title { color: #fff; }
+        .pricing-section .section-subtitle { color: rgba(255,255,255,0.6); }
+        .pricing-grid {
+            max-width: 1100px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+            align-items: start;
+        }
+        .price-card {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 20px;
+            padding: 2.5rem 2rem;
+            transition: all 0.3s;
+        }
+        .price-card.popular {
+            background: rgba(99,102,241,0.1);
+            border-color: var(--accent);
+            position: relative;
+            transform: scale(1.03);
+        }
+        .price-card.popular::before {
+            content: 'Le + populaire';
+            position: absolute;
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--gradient-1);
+            color: #fff;
+            font-size: 0.72rem;
+            font-weight: 700;
+            padding: 0.3rem 1rem;
+            border-radius: 100px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        .price-card:hover {
+            transform: scale(1.02);
+            background: rgba(255,255,255,0.08);
+        }
+        .price-card.popular:hover {
+            transform: scale(1.05);
+        }
+        .price-name {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: #fff;
+        }
+        .price-desc {
+            font-size: 0.85rem;
+            color: rgba(255,255,255,0.5);
+            margin-bottom: 1.5rem;
+        }
+        .price-amount {
+            font-size: 3rem;
+            font-weight: 900;
+            color: #fff;
+            line-height: 1;
+            margin-bottom: 0.25rem;
+        }
+        .price-amount span {
+            font-size: 1rem;
+            font-weight: 500;
+            color: rgba(255,255,255,0.5);
+        }
+        .price-period {
+            font-size: 0.8rem;
+            color: rgba(255,255,255,0.4);
+            margin-bottom: 2rem;
+        }
+        .price-features {
+            list-style: none;
+            margin-bottom: 2rem;
+        }
+        .price-features li {
+            padding: 0.5rem 0;
+            font-size: 0.88rem;
+            color: rgba(255,255,255,0.7);
+            display: flex;
+            align-items: flex-start;
+            gap: 0.6rem;
+        }
+        .price-features li::before {
+            content: '✓';
+            color: var(--success);
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+        .price-card .btn {
+            width: 100%;
+            justify-content: center;
+        }
+
+        /* TRADES */
+        .trades-grid {
+            max-width: 1000px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+        }
+        .trade-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1.25rem 1.5rem;
+            background: #fff;
+            border-radius: 14px;
+            border: 1px solid var(--border);
+            transition: all 0.3s;
+        }
+        .trade-item:hover {
+            border-color: var(--accent);
+            box-shadow: 0 4px 15px var(--accent-glow);
+        }
+        .trade-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+            flex-shrink: 0;
+        }
+        .trade-item h3 {
+            font-size: 0.92rem;
+            font-weight: 600;
+        }
+        .trade-item p {
+            font-size: 0.78rem;
+            color: var(--text-light);
+        }
+
+        /* TRUST */
+        .trust-section {
+            background: var(--light-bg);
+            text-align: center;
+        }
+        .trust-quote {
+            max-width: 700px;
+            margin: 0 auto;
+            font-size: 1.3rem;
+            font-weight: 500;
+            color: var(--text);
+            line-height: 1.7;
+            font-style: italic;
+        }
+        .trust-author {
+            margin-top: 1.5rem;
+            font-size: 0.9rem;
+            color: var(--text-light);
+            font-style: normal;
+        }
+
+        /* FAQ */
+        .faq-container {
+            max-width: 750px;
+            margin: 0 auto;
+        }
+        .faq-item {
+            border-bottom: 1px solid var(--border);
+            padding: 1.25rem 0;
+        }
+        .faq-question {
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+            color: var(--text);
+        }
+        .faq-question::after {
+            content: '+';
+            font-size: 1.5rem;
+            color: var(--accent);
+            transition: transform 0.3s;
+            flex-shrink: 0;
+        }
+        .faq-item.active .faq-question::after {
+            transform: rotate(45deg);
+        }
+        .faq-answer {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease, padding 0.3s ease;
+        }
+        .faq-item.active .faq-answer {
+            max-height: 300px;
+            padding-top: 1rem;
+        }
+        .faq-answer p {
+            font-size: 0.92rem;
+            color: var(--text-light);
+            line-height: 1.7;
+        }
+
+        /* CONTACT / CTA */
+        .cta-section {
+            background: var(--gradient-hero);
+            text-align: center;
+            padding: 6rem 2rem;
+        }
+        .cta-section h2 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: #fff;
+            margin-bottom: 1rem;
+        }
+        .cta-section p {
+            color: rgba(255,255,255,0.6);
+            font-size: 1.1rem;
+            margin-bottom: 2.5rem;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .cta-form {
+            max-width: 500px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        .cta-form input, .cta-form select, .cta-form textarea {
+            padding: 1rem 1.25rem;
+            border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.15);
+            background: rgba(255,255,255,0.08);
+            color: #fff;
+            font-size: 0.95rem;
+            font-family: inherit;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+        .cta-form input::placeholder, .cta-form textarea::placeholder {
+            color: rgba(255,255,255,0.4);
+        }
+        .cta-form input:focus, .cta-form select:focus, .cta-form textarea:focus {
+            border-color: var(--accent);
+        }
+        .cta-form select option { background: var(--primary); color: #fff; }
+        .cta-form textarea { min-height: 100px; resize: vertical; }
+
+        /* FOOTER */
+        footer {
+            background: var(--primary);
+            color: rgba(255,255,255,0.5);
+            padding: 3rem 2rem;
+            text-align: center;
+            font-size: 0.85rem;
+        }
+        footer a { color: var(--accent-light); text-decoration: none; }
+
+        /* CHATBOT */
+        .chatbot-toggle {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: var(--gradient-1);
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 8px 30px rgba(99,102,241,0.4);
+            transition: all 0.3s;
+        }
+        .chatbot-toggle:hover {
+            transform: scale(1.1);
+            box-shadow: 0 12px 40px rgba(99,102,241,0.5);
+        }
+        .chatbot-toggle svg { width: 28px; height: 28px; }
+
+        .chatbot-window {
+            position: fixed;
+            bottom: 100px;
+            right: 24px;
+            width: 380px;
+            max-height: 520px;
+            background: #fff;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+            z-index: 9998;
+            display: none;
+            flex-direction: column;
+            overflow: hidden;
+            border: 1px solid var(--border);
+        }
+        .chatbot-window.open { display: flex; }
+        .chatbot-header {
+            background: var(--gradient-2);
+            color: #fff;
+            padding: 1.2rem 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        .chatbot-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: var(--gradient-1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+        }
+        .chatbot-header-text h4 {
+            font-size: 0.9rem;
+            font-weight: 700;
+        }
+        .chatbot-header-text span {
+            font-size: 0.75rem;
+            opacity: 0.6;
+        }
+        .chatbot-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1.25rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            max-height: 340px;
+        }
+        .chat-msg {
+            max-width: 85%;
+            padding: 0.75rem 1rem;
+            border-radius: 14px;
+            font-size: 0.88rem;
+            line-height: 1.5;
+        }
+        .chat-msg.bot {
+            background: var(--light-bg);
+            color: var(--text);
+            align-self: flex-start;
+            border-bottom-left-radius: 4px;
+        }
+        .chat-msg.user {
+            background: var(--gradient-1);
+            color: #fff;
+            align-self: flex-end;
+            border-bottom-right-radius: 4px;
+        }
+        .chat-quick-replies {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.4rem;
+            margin-top: 0.5rem;
+        }
+        .chat-quick-btn {
+            padding: 0.4rem 0.8rem;
+            border-radius: 100px;
+            border: 1px solid var(--border);
+            background: #fff;
+            font-size: 0.78rem;
+            color: var(--accent);
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s;
+            font-family: inherit;
+        }
+        .chat-quick-btn:hover {
+            background: var(--accent-glow);
+            border-color: var(--accent);
+        }
+        .chatbot-input {
+            padding: 1rem 1.25rem;
+            border-top: 1px solid var(--border);
+            display: flex;
+            gap: 0.5rem;
+        }
+        .chatbot-input input {
+            flex: 1;
+            padding: 0.7rem 1rem;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            font-size: 0.88rem;
+            outline: none;
+            font-family: inherit;
+        }
+        .chatbot-input input:focus { border-color: var(--accent); }
+        .chatbot-input button {
+            padding: 0.7rem 1rem;
+            border-radius: 10px;
+            background: var(--gradient-1);
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            font-family: inherit;
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 968px) {
+            .hero-inner { grid-template-columns: 1fr; text-align: center; }
+            .hero h1 { font-size: 2.5rem; }
+            .hero p { margin: 0 auto 2rem; }
+            .hero-buttons { justify-content: center; }
+            .hero-stats { justify-content: center; }
+            .hero-visual { display: none; }
+            .problems-grid, .modules-grid, .pricing-grid { grid-template-columns: 1fr; max-width: 500px; margin: 0 auto; }
+            .steps-container { grid-template-columns: repeat(2, 1fr); }
+            .steps-container::before { display: none; }
+            .trades-grid { grid-template-columns: 1fr 1fr; }
+            .price-card.popular { transform: none; }
+        }
+        @media (max-width: 768px) {
+            .nav-links { display: none; }
+            .hero { padding: 7rem 1.5rem 4rem; }
+            .hero h1 { font-size: 2rem; }
+            section { padding: 4rem 1.5rem; }
+            .section-title { font-size: 1.8rem; }
+            .case-scenario { grid-template-columns: 1fr; }
+            .case-arrow { transform: rotate(90deg); }
+            .steps-container { grid-template-columns: 1fr 1fr; }
+            .trades-grid { grid-template-columns: 1fr; }
+            .chatbot-window { width: calc(100% - 32px); right: 16px; bottom: 90px; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- NAVIGATION -->
+<nav>
+    <div class="nav-inner">
+        <a href="#" class="logo">Mon<span>AutoPilote</span></a>
+        <div class="nav-links">
+            <a href="#exemples">Exemples</a>
+            <a href="#modules">Modules</a>
+            <a href="#tarifs">Tarifs</a>
+            <a href="#faq">FAQ</a>
+            <a href="#contact" class="btn btn-primary" style="padding: 0.5rem 1.2rem; font-size: 0.85rem;">Essai gratuit</a>
+        </div>
+    </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+    <div class="hero-inner">
+        <div>
+            <div class="hero-badge">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 10 10-12h-9l1-10z"/></svg>
+                Propulsé par l'Intelligence Artificielle
+            </div>
+            <h1>On s'occupe <em>de tout.</em><br>Vous, occupez-vous de vos clients.</h1>
+            <p>Comptabilité, devis, prospection, site web, réseaux sociaux, relation client — notre IA gère votre quotidien pendant que vous restez sur le terrain.</p>
+            <div class="hero-buttons">
+                <a href="#contact" class="btn btn-primary">Essayer gratuitement 14 jours</a>
+                <a href="#exemples" class="btn btn-outline">Voir les exemples</a>
+            </div>
+            <div class="hero-stats">
+                <div class="hero-stat">
+                    <strong>12h</strong>
+                    <span>gagnées / semaine</span>
+                </div>
+                <div class="hero-stat">
+                    <strong>49€</strong>
+                    <span>/ mois seulement</span>
+                </div>
+                <div class="hero-stat">
+                    <strong>0</strong>
+                    <span>compétence tech requise</span>
+                </div>
+            </div>
+        </div>
+        <div class="hero-visual">
+            <div class="hero-card">
+                <div class="hero-card-header">
+                    <div class="hero-card-dot"></div>
+                    <div class="hero-card-title">AutoPilote actif — Aujourd'hui</div>
+                </div>
+                <div class="hero-task">
+                    <div class="hero-task-check">✓</div>
+                    <span>3 devis envoyés automatiquement</span>
+                </div>
+                <div class="hero-task">
+                    <div class="hero-task-check">✓</div>
+                    <span>Factures classées et exportées</span>
+                </div>
+                <div class="hero-task">
+                    <div class="hero-task-check">✓</div>
+                    <span>2 relances impayés envoyées</span>
+                </div>
+                <div class="hero-task">
+                    <div class="hero-task-check">✓</div>
+                    <span>Post Instagram publié</span>
+                </div>
+                <div class="hero-task hero-task-pending">
+                    <div class="hero-task-check"></div>
+                    <span>Comparatif fournisseurs en cours...</span>
+                </div>
+                <div class="hero-task hero-task-pending">
+                    <div class="hero-task-check"></div>
+                    <span>Newsletter mensuelle planifiée</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- PROBLÈME -->
+<section class="problems">
+    <div style="text-align:center;"><span class="section-tag">Le problème</span></div>
+    <h2 class="section-title">Vous passez plus de temps à gérer qu'à travailler</h2>
+    <p class="section-subtitle">Chaque soir après le chantier, c'est la même histoire...</p>
+    <div class="problems-grid">
+        <div class="problem-card animate">
+            <div class="problem-icon" style="background:#FEF3C7;">📄</div>
+            <h3>Devis et factures en retard</h3>
+            <p>Vous répondez aux demandes de devis 5 jours trop tard. Vos concurrents ont déjà signé.</p>
+        </div>
+        <div class="problem-card animate">
+            <div class="problem-icon" style="background:#FEE2E2;">💸</div>
+            <h3>Impayés qui s'accumulent</h3>
+            <p>Des factures non relancées, de la trésorerie qui dort chez vos clients.</p>
+        </div>
+        <div class="problem-card animate">
+            <div class="problem-icon" style="background:#E0E7FF;">🌐</div>
+            <h3>Invisible sur internet</h3>
+            <p>Pas de site web, zéro avis Google répondu. Vos clients vous cherchent et ne vous trouvent pas.</p>
+        </div>
+        <div class="problem-card animate">
+            <div class="problem-icon" style="background:#D1FAE5;">📞</div>
+            <h3>Appels manqués</h3>
+            <p>Quand vous êtes sous un évier ou sur un toit, impossible de décrocher. Le client appelle ailleurs.</p>
+        </div>
+        <div class="problem-card animate">
+            <div class="problem-icon" style="background:#F3E8FF;">🧾</div>
+            <h3>Paperasse sans fin</h3>
+            <p>Des cartons de factures, un comptable qui vous relance, et aucune visibilité sur votre trésorerie.</p>
+        </div>
+        <div class="problem-card animate">
+            <div class="problem-icon" style="background:#FFF7ED;">🔍</div>
+            <h3>Fournisseurs trop chers</h3>
+            <p>Vous payez trop cher parce que vous n'avez jamais le temps de comparer.</p>
+        </div>
+    </div>
+</section>
+
+<!-- COMMENT CA MARCHE -->
+<section>
+    <div style="text-align:center;"><span class="section-tag">Simple</span></div>
+    <h2 class="section-title">Comment ça marche ?</h2>
+    <p class="section-subtitle">4 étapes pour ne plus jamais perdre de temps sur l'administratif.</p>
+    <div class="steps-container">
+        <div class="step animate">
+            <div class="step-number">1</div>
+            <h3>Audit gratuit</h3>
+            <p>On se déplace chez vous, on analyse vos besoins en 30 min.</p>
+        </div>
+        <div class="step animate">
+            <div class="step-number">2</div>
+            <h3>On configure</h3>
+            <p>On paramètre votre IA selon votre métier et vos outils.</p>
+        </div>
+        <div class="step animate">
+            <div class="step-number">3</div>
+            <h3>L'IA travaille</h3>
+            <p>Devis, factures, relances, posts, site web — tout tourne en autopilote.</p>
+        </div>
+        <div class="step animate">
+            <div class="step-number">4</div>
+            <h3>Vous pilotez</h3>
+            <p>Un rapport hebdo clair. Vous gardez le contrôle, sans l'effort.</p>
+        </div>
+    </div>
+</section>
+
+<!-- CAS CONCRETS -->
+<section class="cases-section" id="exemples">
+    <div style="text-align:center;"><span class="section-tag">Cas réels</span></div>
+    <h2 class="section-title">Des exemples concrets, métier par métier</h2>
+    <p class="section-subtitle">Voici ce que MonAutoPilote change au quotidien pour des professionnels comme vous.</p>
+
+    <!-- CAS 1 : PLOMBIER -->
+    <div class="case-block animate">
+        <div class="case-header">
+            <div class="case-header-icon"><svg viewBox="0 0 64 64" fill="none"><rect x="8" y="28" width="48" height="8" rx="4" fill="#60A5FA"/><rect x="28" y="8" width="8" height="48" rx="4" fill="#60A5FA"/><circle cx="32" cy="12" r="6" fill="#93C5FD"/><path d="M12 44c0-4 4-8 8-8h24c4 0 8 4 8 8v4H12v-4z" fill="#3B82F6"/><circle cx="20" cy="32" r="3" fill="#1E40AF"/><circle cx="44" cy="32" r="3" fill="#1E40AF"/></svg></div>
+            <h3>Marc, plombier-chauffagiste à Lyon</h3>
+            <span>Croisière — 149€/mois</span>
+        </div>
+        <div class="case-body">
+            <div class="case-scenario">
+                <div class="case-before">
+                    <div class="case-label">Avant MonAutoPilote</div>
+                    <p>Marc rentre de chantier à 19h. Il passe encore 2h à retrouver ses factures, répondre à 6 demandes de devis, et relancer 3 clients impayés. Pas de site internet, les prospects tombent sur sa messagerie.</p>
+                </div>
+                <div class="case-arrow">→</div>
+                <div class="case-after">
+                    <div class="case-label">Avec MonAutoPilote</div>
+                    <p>Factures classées automatiquement. Devis répondus dans l'heure. Impayés relancés chaque semaine. Son site avec agent IA prend les rendez-vous 24h/24. Marc rentre à 19h, c'est fini.</p>
+                </div>
+            </div>
+            <div class="case-result"><strong>Résultat :</strong> 12h gagnées par semaine. 3 nouveaux clients/mois grâce au site. Zéro impayé de plus de 30 jours.</div>
+        </div>
+    </div>
+
+    <!-- CAS 2 : PAYSAGISTE -->
+    <div class="case-block animate">
+        <div class="case-header">
+            <div class="case-header-icon"><svg viewBox="0 0 64 64" fill="none"><rect x="30" y="32" width="4" height="24" rx="2" fill="#92400E"/><ellipse cx="32" cy="24" rx="16" ry="18" fill="#34D399"/><ellipse cx="24" cy="20" rx="8" ry="10" fill="#6EE7B7"/><ellipse cx="40" cy="22" rx="7" ry="9" fill="#6EE7B7"/><circle cx="20" cy="28" r="2" fill="#F472B6"/><circle cx="42" cy="18" r="2" fill="#FBBF24"/></svg></div>
+            <h3>Sophie, espaces verts dans le 78</h3>
+            <span>Altitude — 299€/mois</span>
+        </div>
+        <div class="case-body">
+            <div class="case-scenario">
+                <div class="case-before">
+                    <div class="case-label">Avant MonAutoPilote</div>
+                    <p>Sophie gère 3 employés et passe ses week-ends à faire les devis, chercher des végétaux au meilleur prix, et tenter de poster sur Instagram. Elle perd des clients car elle met 5 jours à répondre.</p>
+                </div>
+                <div class="case-arrow">→</div>
+                <div class="case-after">
+                    <div class="case-label">Avec MonAutoPilote</div>
+                    <p>Devis traités sous 2h avec chiffrage pré-rempli. L'IA compare les prix chez 5 pépiniéristes. 4 posts Instagram/semaine. L'agent IA qualifie les demandes et planifie les visites.</p>
+                </div>
+            </div>
+            <div class="case-result"><strong>Résultat :</strong> Ses week-ends sont libres. -15% sur les achats de végétaux. Instagram a triplé ses demandes de devis.</div>
+        </div>
+    </div>
+
+    <!-- CAS 3 : ELECTRICIEN -->
+    <div class="case-block animate">
+        <div class="case-header">
+            <div class="case-header-icon"><svg viewBox="0 0 64 64" fill="none"><path d="M36 4L16 32h12L24 60l28-32H38L44 4H36z" fill="#FBBF24"/><path d="M34 8L18 32h10L22 56l24-28H34L40 8H34z" fill="#FCD34D"/></svg></div>
+            <h3>Karim, électricien indépendant à Marseille</h3>
+            <span>Décollage — 49€/mois</span>
+        </div>
+        <div class="case-body">
+            <div class="case-scenario">
+                <div class="case-before">
+                    <div class="case-label">Avant MonAutoPilote</div>
+                    <p>Karim a des cartons de factures non classées. Son comptable le relance chaque trimestre. Il rate des chantiers parce qu'il oublie de relancer ses devis. Il ne sait pas combien on lui doit.</p>
+                </div>
+                <div class="case-arrow">→</div>
+                <div class="case-after">
+                    <div class="case-label">Avec MonAutoPilote</div>
+                    <p>Factures scannées, classées par mois et exportées pour le comptable. Suivi de trésorerie clair. Relances automatiques à J+7, J+15 et J+30. Karim ne touche plus un papier.</p>
+                </div>
+            </div>
+            <div class="case-result"><strong>Résultat :</strong> 6h gagnées/semaine. 2 400€ d'impayés récupérés dès le premier mois. Son comptable est content.</div>
+        </div>
+    </div>
+
+    <!-- CAS 4 : RESTAURATRICE -->
+    <div class="case-block animate">
+        <div class="case-header">
+            <div class="case-header-icon"><svg viewBox="0 0 64 64" fill="none"><ellipse cx="32" cy="40" rx="24" ry="6" fill="#E2E8F0"/><ellipse cx="32" cy="38" rx="22" ry="4" fill="#F8FAFC"/><path d="M10 38c0-12 10-26 22-26s22 14 22 26" stroke="#CBD5E1" stroke-width="2"/><circle cx="38" cy="32" r="3" fill="#F87171"/><circle cx="44" cy="34" r="2" fill="#34D399"/><circle cx="34" cy="30" r="2" fill="#FBBF24"/></svg></div>
+            <h3>Nadia, restauratrice à Bordeaux</h3>
+            <span>Croisière — 149€/mois</span>
+        </div>
+        <div class="case-body">
+            <div class="case-scenario">
+                <div class="case-before">
+                    <div class="case-label">Avant MonAutoPilote</div>
+                    <p>Nadia a 12 avis Google sans réponse, un site de 2019, et elle paie ses fournisseurs trop cher. Elle voudrait envoyer une newsletter mais ne sait pas comment faire.</p>
+                </div>
+                <div class="case-arrow">→</div>
+                <div class="case-after">
+                    <div class="case-label">Avec MonAutoPilote</div>
+                    <p>Chaque avis Google reçoit une réponse sous 24h. Newsletter mensuelle avec le nouveau menu. L'IA a trouvé un fournisseur 20% moins cher. Instagram publié 3x/semaine.</p>
+                </div>
+            </div>
+            <div class="case-result"><strong>Résultat :</strong> Note Google 4.1 → 4.6. 200 abonnés newsletter en 2 mois. 800€/mois économisés sur les fournitures.</div>
+        </div>
+    </div>
+
+    <!-- CAS 5 : MACON -->
+    <div class="case-block animate">
+        <div class="case-header">
+            <div class="case-header-icon"><svg viewBox="0 0 64 64" fill="none"><rect x="8" y="36" width="48" height="8" rx="1" fill="#D97706"/><rect x="8" y="44" width="24" height="6" rx="1" fill="#B45309"/><rect x="32" y="44" width="24" height="6" rx="1" fill="#D97706"/><rect x="12" y="30" width="20" height="6" rx="1" fill="#D97706"/><rect x="32" y="30" width="20" height="6" rx="1" fill="#B45309"/><rect x="16" y="24" width="16" height="6" rx="1" fill="#D97706"/><rect x="32" y="24" width="16" height="6" rx="1" fill="#B45309"/><rect x="8" y="50" width="48" height="4" rx="1" fill="#92400E"/></svg></div>
+            <h3>Thomas, maçon avec 2 compagnons en Bretagne</h3>
+            <span>Croisière — 149€/mois</span>
+        </div>
+        <div class="case-body">
+            <div class="case-scenario">
+                <div class="case-before">
+                    <div class="case-label">Avant MonAutoPilote</div>
+                    <p>Thomas travaille uniquement au bouche-à-oreille. Quand c'est calme, aucun levier pour trouver des chantiers. Devis faits à la main sur un carnet, il en oublie la moitié.</p>
+                </div>
+                <div class="case-arrow">→</div>
+                <div class="case-after">
+                    <div class="case-label">Avec MonAutoPilote</div>
+                    <p>Site vitrine qui montre ses réalisations. L'IA prospecte les syndics et agences immobilières de sa zone. Devis générés et envoyés par email. Comparatif fournisseurs automatique.</p>
+                </div>
+            </div>
+            <div class="case-result"><strong>Résultat :</strong> Carnet de commandes rempli 3 mois à l'avance. 2 contrats syndic signés. Devis en 24h au lieu de 10 jours.</div>
+        </div>
+    </div>
+</section>
+
+<!-- MODULES -->
+<section id="modules">
+    <div style="text-align:center;"><span class="section-tag">Services</span></div>
+    <h2 class="section-title">Tout ce que l'IA peut faire pour vous</h2>
+    <p class="section-subtitle">Un catalogue complet de services pilotés par l'intelligence artificielle.</p>
+    <div class="modules-grid">
+        <div class="module-card animate">
+            <div class="module-icon" style="background:#EFF6FF;">📊</div>
+            <h3>Comptabilité & Factures</h3>
+            <p>Classement automatique des factures, export comptable, suivi de trésorerie en temps réel.</p>
+        </div>
+        <div class="module-card animate">
+            <div class="module-icon" style="background:#F0FDF4;">📝</div>
+            <h3>Devis & Chiffrage</h3>
+            <p>Génération de devis professionnels, chiffrage pré-rempli par métier, envoi automatique.</p>
+        </div>
+        <div class="module-card animate">
+            <div class="module-icon" style="background:#FEF3C7;">💰</div>
+            <h3>Relance des impayés</h3>
+            <p>Relances automatiques à J+7, J+15, J+30. Suivi précis de qui vous doit combien.</p>
+        </div>
+        <div class="module-card animate">
+            <div class="module-icon" style="background:#F3E8FF;">🌐</div>
+            <h3>Site web & Agent IA</h3>
+            <p>Création de votre site vitrine avec un agent IA qui répond aux visiteurs et prend les RDV 24h/24.</p>
+        </div>
+        <div class="module-card animate">
+            <div class="module-icon" style="background:#FEE2E2;">📱</div>
+            <h3>Réseaux sociaux</h3>
+            <p>Publication automatique sur Instagram, Facebook, Google Business. Photos de vos réalisations mises en valeur.</p>
+        </div>
+        <div class="module-card animate">
+            <div class="module-icon" style="background:#E0E7FF;">🔍</div>
+            <h3>Recherche fournisseurs</h3>
+            <p>Comparatif automatique des prix chez vos fournisseurs. Économisez sans effort.</p>
+        </div>
+        <div class="module-card animate">
+            <div class="module-icon" style="background:#ECFDF5;">🤝</div>
+            <h3>Prospection commerciale</h3>
+            <p>L'IA identifie et contacte vos futurs clients : syndics, agences immo, entreprises locales.</p>
+        </div>
+        <div class="module-card animate">
+            <div class="module-icon" style="background:#FFF7ED;">✉️</div>
+            <h3>Emails & Relation client</h3>
+            <p>Réponses aux avis Google, newsletters, communication client — le tout en autopilote.</p>
+        </div>
+        <div class="module-card animate">
+            <div class="module-icon" style="background:#F0F9FF;">🎨</div>
+            <h3>Création graphique</h3>
+            <p>Logos, visuels, cartes de visite, flyers. Votre image pro sans graphiste.</p>
+        </div>
+    </div>
+</section>
+
+<!-- TARIFS -->
+<section class="pricing-section" id="tarifs">
+    <div style="text-align:center;"><span class="section-tag" style="background:rgba(99,102,241,0.2);">Tarifs</span></div>
+    <h2 class="section-title">Un prix clair, sans surprise</h2>
+    <p class="section-subtitle">Chaque formule inclut un essai gratuit de 14 jours. Sans engagement.</p>
+    <div class="pricing-grid">
+        <div class="price-card">
+            <div class="price-name">Décollage</div>
+            <div class="price-desc">Pour démarrer avec l'essentiel</div>
+            <div class="price-amount">49€ <span>/mois</span></div>
+            <div class="price-period">HT — Sans engagement</div>
+            <ul class="price-features">
+                <li>Classement automatique des factures</li>
+                <li>Export comptable mensuel</li>
+                <li>Relance des impayés (J+7, J+15, J+30)</li>
+                <li>Suivi de trésorerie</li>
+                <li>Support par email</li>
+            </ul>
+            <a href="#contact" class="btn btn-outline" style="border-color:rgba(255,255,255,0.2);">Commencer l'essai gratuit</a>
+        </div>
+        <div class="price-card popular">
+            <div class="price-name">Croisière</div>
+            <div class="price-desc">Le plus populaire — gestion complète</div>
+            <div class="price-amount">149€ <span>/mois</span></div>
+            <div class="price-period">HT — Sans engagement</div>
+            <ul class="price-features">
+                <li>Tout Décollage inclus</li>
+                <li>Génération de devis automatique</li>
+                <li>Site web vitrine avec agent IA</li>
+                <li>Réseaux sociaux (3 posts/semaine)</li>
+                <li>Emails & relation client</li>
+                <li>Réponse aux avis Google</li>
+                <li>Support prioritaire</li>
+            </ul>
+            <a href="#contact" class="btn btn-primary">Commencer l'essai gratuit</a>
+        </div>
+        <div class="price-card">
+            <div class="price-name">Altitude</div>
+            <div class="price-desc">Pour ceux qui veulent tout déléguer</div>
+            <div class="price-amount">299€ <span>/mois</span></div>
+            <div class="price-period">HT — Sans engagement</div>
+            <ul class="price-features">
+                <li>Tout Croisière inclus</li>
+                <li>Prospection commerciale IA</li>
+                <li>Recherche & comparatif fournisseurs</li>
+                <li>Création graphique (logo, flyers)</li>
+                <li>Réseaux sociaux (5 posts/semaine)</li>
+                <li>Newsletter mensuelle</li>
+                <li>Rapport hebdo personnalisé</li>
+                <li>Interlocuteur dédié</li>
+            </ul>
+            <a href="#contact" class="btn btn-outline" style="border-color:rgba(255,255,255,0.2);">Commencer l'essai gratuit</a>
+        </div>
+    </div>
+</section>
+
+<!-- MÉTIERS -->
+<section style="background:var(--light-bg);">
+    <div style="text-align:center;"><span class="section-tag">Métiers</span></div>
+    <h2 class="section-title">Conçu pour les professionnels de terrain</h2>
+    <p class="section-subtitle">Quelle que soit votre activité, MonAutoPilote s'adapte à votre métier.</p>
+    <div class="trades-grid">
+        <div class="trade-item animate">
+            <div class="trade-icon" style="background:#EFF6FF;">🔧</div>
+            <div><h3>Plombiers & Chauffagistes</h3><p>Devis, factures, site web, relances</p></div>
+        </div>
+        <div class="trade-item animate">
+            <div class="trade-icon" style="background:#FEF3C7;">⚡</div>
+            <div><h3>Électriciens</h3><p>Comptabilité, certifications en ligne</p></div>
+        </div>
+        <div class="trade-item animate">
+            <div class="trade-icon" style="background:#F0FDF4;">🌿</div>
+            <div><h3>Paysagistes</h3><p>Comparatif pépiniéristes, Instagram</p></div>
+        </div>
+        <div class="trade-item animate">
+            <div class="trade-icon" style="background:#FFF7ED;">🏗️</div>
+            <div><h3>Maçons & BTP</h3><p>Devis multi-lots, prospection syndics</p></div>
+        </div>
+        <div class="trade-item animate">
+            <div class="trade-icon" style="background:#FEE2E2;">🍽️</div>
+            <div><h3>Restaurateurs</h3><p>Avis Google, newsletter, fournisseurs</p></div>
+        </div>
+        <div class="trade-item animate">
+            <div class="trade-icon" style="background:#F3E8FF;">🏪</div>
+            <div><h3>Commerces & Artisans</h3><p>Visibilité locale, fidélisation client</p></div>
+        </div>
+    </div>
+</section>
+
+<!-- TRUST -->
+<section class="trust-section">
+    <div style="text-align:center;"><span class="section-tag">Notre vision</span></div>
+    <blockquote class="trust-quote">
+        « J'ai créé MonAutoPilote parce que les artisans et les PME méritent les mêmes outils que les grandes entreprises. L'IA n'est pas réservée aux géants du CAC 40 — elle est là pour vous simplifier la vie, au quotidien. »
+    </blockquote>
+    <p class="trust-author">— Stéphane, Fondateur de MonAutoPilote</p>
+</section>
+
+<!-- FAQ -->
+<section id="faq">
+    <div style="text-align:center;"><span class="section-tag">FAQ</span></div>
+    <h2 class="section-title">Questions fréquentes</h2>
+    <p class="section-subtitle">Tout ce que vous devez savoir avant de commencer.</p>
+    <div class="faq-container">
+        <div class="faq-item">
+            <div class="faq-question">C'est quoi exactement MonAutoPilote ?</div>
+            <div class="faq-answer"><p>MonAutoPilote est un service d'assistant IA pour artisans et PME. On prend en charge votre administratif, votre communication et votre prospection grâce à l'intelligence artificielle. Vous restez sur le terrain, on gère le reste.</p></div>
+        </div>
+        <div class="faq-item">
+            <div class="faq-question">Est-ce que j'ai besoin de compétences techniques ?</div>
+            <div class="faq-answer"><p>Absolument pas. On configure tout pour vous lors de l'audit initial. Ensuite, tout tourne en autopilote. Vous recevez un rapport hebdomadaire clair de ce qui a été fait.</p></div>
+        </div>
+        <div class="faq-item">
+            <div class="faq-question">Comment fonctionne l'essai gratuit de 14 jours ?</div>
+            <div class="faq-answer"><p>Vous testez la formule de votre choix pendant 14 jours, sans engagement et sans carte bancaire. Si vous n'êtes pas convaincu, vous ne payez rien.</p></div>
+        </div>
+        <div class="faq-item">
+            <div class="faq-question">Est-ce que l'IA remplace un comptable ?</div>
+            <div class="faq-answer"><p>Non. L'IA classe et organise vos documents pour que votre comptable travaille plus efficacement. Elle ne remplace pas un expert-comptable, elle lui facilite le travail (et le vôtre).</p></div>
+        </div>
+        <div class="faq-item">
+            <div class="faq-question">Combien de temps avant de voir des résultats ?</div>
+            <div class="faq-answer"><p>Les premiers résultats sont visibles dès la première semaine : factures classées, relances envoyées, site en ligne. Les résultats commerciaux (nouveaux clients) apparaissent généralement sous 4 à 8 semaines.</p></div>
+        </div>
+        <div class="faq-item">
+            <div class="faq-question">Puis-je changer de formule ?</div>
+            <div class="faq-answer"><p>Oui, à tout moment. Vous pouvez passer d'une formule à l'autre sans frais et sans engagement minimum.</p></div>
+        </div>
+        <div class="faq-item">
+            <div class="faq-question">Mes données sont-elles sécurisées ?</div>
+            <div class="faq-answer"><p>Oui. Vos données sont chiffrées et hébergées en France. Nous ne revendons jamais vos informations. Conformité RGPD garantie.</p></div>
+        </div>
+        <div class="faq-item">
+            <div class="faq-question">Comment fonctionne l'agent IA sur mon site web ?</div>
+            <div class="faq-answer"><p>L'agent IA est un chatbot intelligent intégré à votre site. Il répond aux questions de vos visiteurs, qualifie les demandes et prend les rendez-vous automatiquement, 24h/24 et 7j/7.</p></div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA / CONTACT -->
+<section class="cta-section" id="contact">
+    <h2>Prêt à mettre votre business en autopilote ?</h2>
+    <p>14 jours d'essai gratuit. Sans engagement. Sans carte bancaire.</p>
+    <form class="cta-form" id="contactForm">
+        <input type="text" name="name" placeholder="Votre nom" required>
+        <input type="email" name="email" placeholder="Votre email" required>
+        <input type="tel" name="phone" placeholder="Votre téléphone">
+        <select name="trade">
+            <option value="">Votre métier</option>
+            <option>Plombier / Chauffagiste</option>
+            <option>Électricien</option>
+            <option>Paysagiste</option>
+            <option>Maçon / BTP</option>
+            <option>Restaurateur</option>
+            <option>Commerce</option>
+            <option>Autre</option>
+        </select>
+        <select name="plan">
+            <option value="">Formule souhaitée</option>
+            <option>Décollage — 49€/mois</option>
+            <option>Croisière — 149€/mois</option>
+            <option>Altitude — 299€/mois</option>
+            <option>Je ne sais pas encore</option>
+        </select>
+        <textarea name="message" placeholder="Décrivez votre besoin en quelques mots..."></textarea>
+        <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center;padding:1rem;">Démarrer mon essai gratuit →</button>
+    </form>
+</section>
+
+<!-- FOOTER -->
+<footer>
+    <p style="margin-bottom:0.5rem;"><strong style="color:#fff;">MonAutoPilote</strong> — L'IA qui pilote votre quotidien</p>
+    <p>© 2026 MonAutoPilote. Tous droits réservés. | <a href="mailto:contact@monautopilote.fr">contact@monautopilote.fr</a></p>
+</footer>
+
+<!-- CHATBOT WIDGET -->
+<button class="chatbot-toggle" onclick="toggleChat()" aria-label="Ouvrir le chat">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+</button>
+
+<div class="chatbot-window" id="chatWindow">
+    <div class="chatbot-header">
+        <div class="chatbot-avatar">🤖</div>
+        <div class="chatbot-header-text">
+            <h4>Assistant MonAutoPilote</h4>
+            <span>En ligne — Répond instantanément</span>
+        </div>
+    </div>
+    <div class="chatbot-messages" id="chatMessages">
+        <div class="chat-msg bot">
+            Bonjour ! 👋 Je suis l'assistant MonAutoPilote. Comment puis-je vous aider ?
+        </div>
+        <div class="chat-quick-replies">
+            <button class="chat-quick-btn" onclick="quickReply('Comment ça marche ?')">Comment ça marche ?</button>
+            <button class="chat-quick-btn" onclick="quickReply('Quels sont les tarifs ?')">Les tarifs</button>
+            <button class="chat-quick-btn" onclick="quickReply('Je veux un audit gratuit')">Audit gratuit</button>
+            <button class="chat-quick-btn" onclick="quickReply('Quel métier ?')">Pour mon métier</button>
+        </div>
+    </div>
+    <div class="chatbot-input">
+        <input type="text" id="chatInput" placeholder="Posez votre question..." onkeypress="if(event.key==='Enter')sendChat()">
+        <button onclick="sendChat()">→</button>
+    </div>
+</div>
+
+<script>
+// Chat toggle
+function toggleChat() {
+    document.getElementById('chatWindow').classList.toggle('open');
+}
+
+// Quick replies
+function quickReply(text) {
+    addMessage(text, 'user');
+    setTimeout(() => botReply(text), 600);
+}
+
+// Send message
+function sendChat() {
+    const input = document.getElementById('chatInput');
+    const text = input.value.trim();
+    if (!text) return;
+    addMessage(text, 'user');
+    input.value = '';
+    setTimeout(() => botReply(text), 600);
+}
+
+// Add message to chat
+function addMessage(text, sender) {
+    const msgs = document.getElementById('chatMessages');
+    const quickReplies = msgs.querySelector('.chat-quick-replies');
+    if (quickReplies) quickReplies.remove();
+    const div = document.createElement('div');
+    div.className = 'chat-msg ' + sender;
+    div.textContent = text;
+    msgs.appendChild(div);
+    msgs.scrollTop = msgs.scrollHeight;
+}
+
+// Bot responses
+function botReply(userText) {
+    const lower = userText.toLowerCase();
+    let reply = '';
+
+    if (lower.includes('tarif') || lower.includes('prix') || lower.includes('coût') || lower.includes('combien')) {
+        reply = "Nos formules démarrent à 49€/mois HT (Décollage), 149€/mois HT (Croisière, la plus populaire) et 299€/mois HT (Altitude). Chaque formule inclut un essai gratuit de 14 jours, sans engagement. Souhaitez-vous qu'on vous rappelle pour en discuter ?";
+    } else if (lower.includes('comment') && (lower.includes('marche') || lower.includes('fonctionne'))) {
+        reply = "C'est simple ! 1️⃣ On fait un audit gratuit chez vous (30 min). 2️⃣ On configure l'IA selon votre métier. 3️⃣ L'IA gère votre quotidien en autopilote. 4️⃣ Vous recevez un rapport chaque semaine. Voulez-vous planifier votre audit gratuit ?";
+    } else if (lower.includes('audit') || lower.includes('rendez-vous') || lower.includes('rdv') || lower.includes('essai')) {
+        reply = "Super ! Pour planifier votre audit gratuit, laissez-moi votre nom, téléphone et ville. On vous rappelle sous 24h pour convenir d'un créneau. Vous pouvez aussi remplir le formulaire en bas de page ou nous écrire à contact@monautopilote.fr.";
+    } else if (lower.includes('métier') || lower.includes('plombier') || lower.includes('electricien') || lower.includes('électricien') || lower.includes('maçon') || lower.includes('paysagiste') || lower.includes('restaurant')) {
+        reply = "MonAutoPilote est conçu pour tous les métiers de terrain : plombiers, électriciens, paysagistes, maçons, restaurateurs, commerces... L'IA s'adapte à votre activité spécifique. Quel est votre métier ? Je vous dirai exactement ce qu'on peut faire pour vous.";
+    } else if (lower.includes('site') || lower.includes('web')) {
+        reply = "Avec les formules Croisière et Altitude, on crée votre site web vitrine avec un agent IA intégré qui répond à vos visiteurs 24h/24 et prend les rendez-vous automatiquement. Votre site est en ligne en 48h.";
+    } else if (lower.includes('facture') || lower.includes('compta') || lower.includes('impayé') || lower.includes('relance')) {
+        reply = "Dès la formule Décollage (49€/mois), l'IA classe vos factures automatiquement, envoie les relances d'impayés à J+7, J+15 et J+30, et exporte tout pour votre comptable. Fini les cartons de paperasse !";
+    } else if (lower.includes('bonjour') || lower.includes('salut') || lower.includes('hello') || lower.includes('bonsoir')) {
+        reply = "Bonjour ! Bienvenue chez MonAutoPilote. Je suis là pour répondre à toutes vos questions. Que souhaitez-vous savoir ?";
+    } else {
+        reply = "Merci pour votre message ! Pour une réponse personnalisée, je vous invite à nous contacter à contact@monautopilote.fr ou à remplir le formulaire en bas de page. On vous rappelle sous 24h pour discuter de votre projet.";
+    }
+
+    addMessage(reply, 'bot');
+}
+
+// Scroll animations
+const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+        }
+    });
+}, { threshold: 0.1 });
+
+document.querySelectorAll('.animate').forEach(el => observer.observe(el));
+
+// FAQ accordions
+document.querySelectorAll('.faq-question').forEach(q => {
+    q.addEventListener('click', () => {
+        const item = q.parentElement;
+        const isActive = item.classList.contains('active');
+        document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('active'));
+        if (!isActive) item.classList.add('active');
+    });
+});
+
+// Contact form
+document.getElementById('contactForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const data = new FormData(this);
+    const name = data.get('name');
+    alert('Merci ' + name + ' ! Nous avons bien reçu votre demande. On vous recontacte sous 24h.');
+    this.reset();
+});
+</script>
+
+</body>
+</html>
